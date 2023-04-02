@@ -52,9 +52,9 @@ class MultiBandBlending(Blending):
         pyramid = []
         current = image.copy()
         for i in range(self.num_levels - 1):
-            lowfreq_features = cv2.GaussianBlur(src=current, ksize=(5,5), sigmaX=0.5)
+            lowfreq_features = cv2.GaussianBlur(current, (5,5), 0.7)
             lowfreq_features_upsampled = cv2.pyrDown(lowfreq_features)
-            highfreq_features = lowfreq_features - cv2.pyrUp(lowfreq_features_upsampled)
+            highfreq_features = lowfreq_features - cv2.pyrUp(lowfreq_features_upsampled, dstsize=(lowfreq_features.shape[1], lowfreq_features.shape[0]))
             pyramid.append(highfreq_features)
             current = lowfreq_features_upsampled
         pyramid.append(current)
@@ -75,7 +75,7 @@ class MultiBandBlending(Blending):
         pyramid = pyramid[::-1]  # invert from (large->small) to (small->large)
         image = pyramid[0]
         for feature in pyramid[1:]:
-            image = cv2.pyrUp(image)  # Hint: Replace this line with the appropriate expression
+            image = cv2.pyrUp(image, dstsize=(feature.shape[1], feature.shape[0]))  # Hint: Replace this line with the appropriate expression
             image += feature
         return image
 
