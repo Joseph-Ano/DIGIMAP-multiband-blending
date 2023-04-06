@@ -28,8 +28,8 @@ def compute_num_levels(image: np.ndarray):
 
 
 if __name__ == "__main__":
-    target = read_image("left.jpg")
-    source = read_image("right.jpg")
+    target = read_image("target.jpg")
+    source = read_image("source.jpg")
     mask = read_mask("mask.jpg")
 
     blender = blending.MultiBandBlending(num_levels=compute_num_levels(target))
