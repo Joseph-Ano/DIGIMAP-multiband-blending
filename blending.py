@@ -52,11 +52,11 @@ class MultiBandBlending(Blending):
         pyramid = []
         current = image.copy()
         for i in range(self.num_levels - 1):
-            lowfreq_features = cv2.GaussianBlur(current, (5,5), 0.7)
-            lowfreq_features_upsampled = cv2.pyrDown(lowfreq_features)
-            highfreq_features = lowfreq_features - cv2.pyrUp(lowfreq_features_upsampled, dstsize=(lowfreq_features.shape[1], lowfreq_features.shape[0]))
+            lowfreq_features = cv2.pyrDown(current)
+            lowfreq_features_upsampled = cv2.pyrUp(lowfreq_features, dstsize=(current.shape[1], current.shape[0]))
+            highfreq_features = current - lowfreq_features_upsampled
             pyramid.append(highfreq_features)
-            current = lowfreq_features_upsampled
+            current = lowfreq_features
         pyramid.append(current)
         return pyramid
 
@@ -87,9 +87,7 @@ class MultiBandBlending(Blending):
     def join_channels(self, channels: typing.List[np.ndarray]) -> np.ndarray:
         # SCORE +1: Combine the split channels to a single image of shape (H, W, C)
         # Hint: Use np.stack
-        image = np.stack(channels, axis=2)
-        image = np.uint8(image * 255)
-        return image
+        return np.stack(channels, axis=2)
 
     def blend_channel(self, target: np.ndarray, source: np.ndarray, mask: np.ndarray):
         assert target.ndim == 2
